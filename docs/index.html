@@ -86,7 +86,7 @@
 <span><span class="co">#&gt; [5] "Central Missouri Regional"</span></span></code></pre></div>
 <p>The matches from Clash in the Corn can be accessed using the event code <code>2024iawes</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
@@ -106,6 +106,26 @@
 <span><span class="co"># 22 qualifying matches</span></span>
 <span><span class="co"># 5 semi-finals</span></span>
 <span><span class="co"># 2 finals</span></span></code></pre></div>
+<p>The function <code>get_match_details</code> turns the records into a more manageable form by turning the match-based rows from the <code>get_records</code> results into team-based results, i.e. every row corresponds to the detailed scores of each team in each one of the matches:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_match_details.html">get_match_details</a></span><span class="op">(</span><span class="va">matches</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">comp_level</span>, <span class="va">match_number</span>, <span class="va">set_number</span>, <span class="va">alliance</span>, <span class="va">team_key</span>, <span class="va">score</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"Points"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 25</span></span>
+<span><span class="co">#&gt;   comp_level match_number set_number alliance team_key score adjustPoints</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;             &lt;int&gt;      &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;        &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 f                     1          1 blue     frc9998     38            0</span></span>
+<span><span class="co">#&gt; 2 f                     1          1 blue     frc6419     38            0</span></span>
+<span><span class="co">#&gt; 3 f                     1          1 blue     frc4646     38            0</span></span>
+<span><span class="co">#&gt; 4 f                     2          1 blue     frc9998     44            0</span></span>
+<span><span class="co">#&gt; 5 f                     2          1 blue     frc6419     44            0</span></span>
+<span><span class="co">#&gt; 6 f                     2          1 blue     frc4646     44            0</span></span>
+<span><span class="co">#&gt; # ℹ 18 more variables: autoAmpNotePoints &lt;int&gt;, autoLeavePoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   autoPoints &lt;int&gt;, autoSpeakerNotePoints &lt;int&gt;, autoTotalNotePoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   endGameHarmonyPoints &lt;int&gt;, endGameNoteInTrapPoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   endGameOnStagePoints &lt;int&gt;, endGameParkPoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   endGameSpotLightBonusPoints &lt;int&gt;, endGameTotalStagePoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   foulPoints &lt;int&gt;, teleopAmpNotePoints &lt;int&gt;, teleopPoints &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   teleopSpeakerNoteAmplifiedPoints &lt;int&gt;, teleopSpeakerNotePoints &lt;int&gt;, …</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

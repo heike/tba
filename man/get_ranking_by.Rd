@@ -21,8 +21,14 @@ tibble of the ranked teams and the number of matches (\code{n}) that the ranking
 All teams are ranked (if possible) by their contribution to the scoring variable.
 }
 \details{
-If all values in the scoring variable are positive, a log linear model is
-fitted otherwise a normal (Gaussian) model is fitted. The OPR
+In order to model each team's contribution, a wide data set has to be constructed, with each
+team as a variable, and each row as one of the alliances in one match and their score.
+An alliance in a match consists of exactly three robots. This requirement is checked before modelling
+and if not fulfilled, results in a warning.
+A normal model is then fitted, or, if \code{method = "loglinear"} a log-linear model is fitted, if all values in the scoring variable are non-negative.
+The coefficients of this model can be interpreted as the average (log) contribution of that
+team to the score of a match. The OPR (offensive power rating) corresponds
+to a call to \code{get_ranking_by} with \code{score} as the variable.
 }
 \examples{
 # example code
@@ -31,10 +37,13 @@ clash_matches <- get_records("event/2024cttd/matches")
 # get the score breakdown for each of the teams in each match
 clash_details <- get_match_details(clash_matches)
 
+library(dplyr, quietly=TRUE)
 # now get the contribution to the score:
 clash_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
   get_ranking_by(score)
-# OPR is calculated with a normal model of the score without foulpoints
+# These coefficients correspond to the OPR 
+
+# team contribution to the score without counting the opponents' fouls:
 clash_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
   get_ranking_by(score-foulPoints)
 }

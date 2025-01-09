@@ -76,6 +76,7 @@ calculate_tba_ranking_2024 <- function(data) {
   season <- parse_number(event)
   stopifnot(all(season==2024))
 
+# bit messy, but based on definition of ranking system in Game Manual  
   data %>% 
     mutate(
       score_no_fouls = score - foulPoints 
@@ -113,6 +114,7 @@ calculate_tba_ranking_2024 <- function(data) {
 #' @examples
 #' tba_ranking("cttd", 2024) # same team ranking as in example for `calc_ranking_tba_2024`
 tba_ranking <- function(event_code, season) {
+  parse_quietly <- quietly(parse_number)
   event <- paste0(season, event_code)
   ranking_list <- get_records(sprintf("/event/%s/rankings", event))
 
@@ -120,7 +122,12 @@ tba_ranking <- function(event_code, season) {
     unnest_wider(.data$sort_orders, names_sep = "_") %>%
     select(.data$team_key, .data$rank, starts_with("sort_order"))
   
-  names(rankings)[-(1:2)] <- c(ranking_list$sort_order_info$name, ranking_list$extra_stats_info$name)
+  rankings <- rankings %>% discard(.p = function(x) {if (is.numeric(x)) var(na.omit(x)) == 0 else FALSE})
+  indices <- na.omit(parse_quietly(names(rankings))$result)
   
-  rankings %>% left_join(ranking_list$rankings %>% select(-sort_orders), by=c("team_key", "rank"))
+  names(rankings)[-(1:2)] <- c(ranking_list$sort_order_info$name, ranking_list$extra_stats_info$name)[indices]
+  
+  rankings %>% left_join(
+    ranking_list$rankings %>% select(-.data$sort_orders, -.data$extra_stats), 
+    by=c("team_key", "rank"))
 }

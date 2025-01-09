@@ -63,8 +63,14 @@ to the score breakdown of one team in one event's match.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>If all values in the scoring variable are positive, a log linear model is
-fitted otherwise a normal (Gaussian) model is fitted. The OPR</p>
+    <p>In order to model each team's contribution, a wide data set has to be constructed, with each
+team as a variable, and each row as one of the alliances in one match and their score.
+An alliance in a match consists of exactly three robots. This requirement is checked before modelling
+and if not fulfilled, results in a warning.
+A normal model is then fitted, or, if <code>method = "loglinear"</code> a log-linear model is fitted, if all values in the scoring variable are non-negative.
+The coefficients of this model can be interpreted as the average (log) contribution of that
+team to the score of a match. The OPR (offensive power rating) corresponds
+to a call to <code>get_ranking_by</code> with <code>score</code> as the variable.</p>
     </div>
 
     <div class="section level2">
@@ -75,14 +81,51 @@ fitted otherwise a normal (Gaussian) model is fitted. The OPR</p>
 <span class="r-in"><span><span class="co"># get the score breakdown for each of the teams in each match</span></span></span>
 <span class="r-in"><span><span class="va">clash_details</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_match_details.html">get_match_details</a></span><span class="op">(</span><span class="va">clash_matches</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class="r-in"><span><span class="co"># now get the contribution to the score:</span></span></span>
 <span class="r-in"><span><span class="va">clash_details</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span> <span class="op">==</span> <span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># get the qualifying matches</span></span></span>
 <span class="r-in"><span>  <span class="fu">get_ranking_by</span><span class="op">(</span><span class="va">score</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in clash_details %&gt;% filter(comp_level == "qm") %&gt;% get_ranking_by(score):</span> could not find function "%&gt;%"</span>
-<span class="r-in"><span><span class="co"># OPR is calculated with a normal model of the score without foulpoints</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 42 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    team_key score     n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> frc3284   44.6     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> frc5126   35.6     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> frc1108   31.6     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> frc1987   30.7     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> frc3928   28.1     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> frc1986   26.8     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> frc2357   26.8     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> frc6424   24.9     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> frc1769   23.9     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> frc5801   23.9     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 32 more rows</span></span>
+<span class="r-in"><span><span class="co"># These coefficients correspond to the OPR </span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># team contribution to the score without counting the opponents' fouls:</span></span></span>
 <span class="r-in"><span><span class="va">clash_details</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span> <span class="op">==</span> <span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># get the qualifying matches</span></span></span>
 <span class="r-in"><span>  <span class="fu">get_ranking_by</span><span class="op">(</span><span class="va">score</span><span class="op">-</span><span class="va">foulPoints</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in clash_details %&gt;% filter(comp_level == "qm") %&gt;% get_ranking_by(score -     foulPoints):</span> could not find function "%&gt;%"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 42 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    team_key `score - foulPoints`     n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> frc1108                  32.4     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> frc3284                  30.1     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> frc1986                  28.7     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> frc6424                  28.7     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> frc1987                  27.5     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> frc3928                  24.1     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> frc2357                  23.1     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> frc5126                  22.9     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> frc5801                  21.0     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> frc935                   20.3     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 32 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
