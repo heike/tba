@@ -4,9 +4,14 @@
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/calculate_tba_ranking.html</loc></url>
+<url><loc>/reference/calculate_tba_ranking_2024.html</loc></url>
 <url><loc>/reference/check_key.html</loc></url>
 <url><loc>/reference/get_api_key.html</loc></url>
+<url><loc>/reference/get_match_details.html</loc></url>
+<url><loc>/reference/get_ranking_by.html</loc></url>
 <url><loc>/reference/get_records.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/tba_ranking.html</loc></url>
 </urlset>
 
