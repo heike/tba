@@ -19,27 +19,27 @@
 get_match_details <- function(data) {
   # data is assumed to be in the form of a result from a `get_records` call 
   # with call = "/event/{event_key}/matches"
-  data_plus <- data %>% select(-.data$videos) %>%
-    unnest(c(.data$alliances, .data$score_breakdown), names_sep = "_") 
+  data_plus <- data %>% select(-"videos") %>%
+    unnest(c("alliances", "score_breakdown"), names_sep = "_") 
   
   team_blue <- data_plus %>% 
-    select(.data$comp_level, .data$match_number, .data$set_number, ends_with("_blue")) %>%
+    select("comp_level", "match_number", "set_number", ends_with("_blue")) %>%
     unnest(cols = ends_with("_blue")) %>% discard(.p = function(d) is_empty(compact(d))) %>%
     mutate(alliance = "blue")
   team_red <- data_plus %>% 
-    select(.data$comp_level, .data$match_number, .data$set_number, ends_with("_red")) %>%
+    select("comp_level", "match_number", "set_number", ends_with("_red")) %>%
     unnest(cols = ends_with("_red")) %>% discard(.p = function(d) is_empty(compact(d))) %>%
     mutate(alliance = "red")
   
   team_blue <- team_blue %>%
-    left_join(data %>% select(-.data$alliances, -.data$score_breakdown), 
+    left_join(data %>% select(-"alliances", -"score_breakdown"), 
               by = c("comp_level", "match_number", "set_number"))
   team_red <- team_red %>% 
-    left_join(data %>% select(-.data$alliances, -.data$score_breakdown), 
+    left_join(data %>% select(-"alliances", -"score_breakdown"), 
               by = c("comp_level", "match_number", "set_number"))
   
   rbind(team_blue, team_red) %>% 
-    unnest_longer(col=.data$team_keys, values_to = "team_key")
+    unnest_longer(col="team_keys", values_to = "team_key")
 }
 
   

@@ -33,17 +33,17 @@ to a call to \code{get_ranking_by} with \code{score} as the variable.
 \examples{
 # example code
 # get all matches for one event:
-clash_matches <- get_records("event/2024cttd/matches")
+matches <- get_records("event/2024cttd/matches")
 # get the score breakdown for each of the teams in each match
-clash_details <- get_match_details(clash_matches)
+match_details <- get_match_details(matches)
 
 library(dplyr, quietly=TRUE)
 # now get the contribution to the score:
-clash_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
+match_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
   get_ranking_by(score)
 # These coefficients correspond to the OPR 
 
 # team contribution to the score without counting the opponents' fouls:
-clash_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
+match_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
   get_ranking_by(score-foulPoints)
 }
