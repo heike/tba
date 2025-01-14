@@ -14,8 +14,8 @@ tba_ranking <- function(event_code, season) {
   ranking_list <- get_records(sprintf("/event/%s/rankings", event))
 
   rankings <- ranking_list$rankings %>% 
-    unnest_wider(.data$sort_orders, names_sep = "_") %>%
-    select(.data$team_key, .data$rank, starts_with("sort_order"))
+    unnest_wider("sort_orders", names_sep = "_") %>%
+    select("team_key", "rank", starts_with("sort_order"))
   
   rankings <- rankings %>% discard(.p = function(x) {if (is.numeric(x)) var(na.omit(x)) == 0 else FALSE})
   indices <- na.omit(parse_quietly(names(rankings))$result)
@@ -23,6 +23,6 @@ tba_ranking <- function(event_code, season) {
   names(rankings)[-(1:2)] <- c(ranking_list$sort_order_info$name, ranking_list$extra_stats_info$name)[indices]
   
   rankings %>% left_join(
-    ranking_list$rankings %>% select(-.data$sort_orders, -.data$extra_stats), 
+    ranking_list$rankings %>% select(-"sort_orders", -"extra_stats"), 
     by=c("team_key", "rank"))
 }

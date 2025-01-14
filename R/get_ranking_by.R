@@ -50,7 +50,7 @@ get_ranking_by <- function(data, ... , method = "normal") {
     data.frame(
       names_list = dependent_list %>% sapply(FUN = as_label),
       rankings = I(lapply(dependent_list, FUN = function(x) {
-        res <- get_ranking_by_one(data, {{x}})
+        res <- get_ranking_by_one(data, {{x}}, method = method)
         names(res)[ncol(res)-1] <- "coefficient"
         res
       }))))

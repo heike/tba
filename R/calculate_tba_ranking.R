@@ -23,10 +23,10 @@ calculate_tba_ranking <- function(data) {
   
   event <- data %>% pluck("event_key") %>% unique()
   if (length(event) > 1) 
-    warning(sprintf("Matches from multiple events are included: '%s'", paste(event, collapse=",")))
+    warning(sprintf("Matches from multiple events are included: '%s'\nOnly using the first event's scoring method.", paste(event, collapse=", ")))
   
-  season <- parse_number(event)
-  if (season == 2024) calculate_tba_ranking_2024(data)
+  season <- parse_number(event[1])
+  if (season == 2024) return(calculate_tba_ranking_2024(data))
   
   message(sprintf("TBA ranking is not implemented yet for the %d season.", season))
 }
