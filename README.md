@@ -195,16 +195,23 @@ library(ggplot2)
 all_points <- scores %>% get_ranking_by(score, score-foulPoints)
 all_points %>% ggplot(aes(x = `rating(score)`, y = `rating(score - foulPoints)`)) + 
   geom_point() + xlab("OPR") + 
-  ggrepel::geom_label_repel(aes(label = team_key), size=3, alpha = 0.6, fill_alpha = 0.8) +
+  ggrepel::geom_label_repel(aes(label = team_key), size=3, alpha = 0.6) +
   geom_rug(length = unit(0.03, "npc")) +
   scale_y_continuous(expand = c(0.2, 0.2)) +
   scale_x_continuous(expand = c(0.2, 0.2)) +
   coord_equal()
-#> Warning in ggrepel::geom_label_repel(aes(label = team_key), size = 3, alpha =
-#> 0.6, : Ignoring unknown parameters: `fill_alpha`
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" alt="Scatterplot of team contributions measured in OPR (x axis) and to the score without foul points (y axis). The relationship is roughly linear, but the spacing between team contributions is different as discussed in more detail in the writeup." width="100%" />
+<div class="figure">
+
+<img src="man/figures/README-fig-scatter-1.png" alt="Scatterplot of team contributions measured in OPR (x axis) and to the score without foul points (y axis). The relationship is roughly linear, but the spacing between team contributions is different as discussed in more detail in the writeup." width="100%" />
+<p class="caption">
+
+Scatterplot of team contributions measured in OPR (x axis) and to the
+score without foul points (y axis).
+</p>
+
+</div>
 
 ### Worst fouling team
 
@@ -240,5 +247,46 @@ scores %>% filter(comp_level=="qm") %>%
 ``` r
 detailed <- scores %>% filter(comp_level=="qm") %>%
   get_ranking_by(score, score - foulPoints, autoPoints, teleopPoints, -1*(2*foulCount+5*techFoulCount)) 
-  
+
+# add the tba rating to the mix:
+tba_rating <- tba_ranking("iawes", 2024)
+detailed <- detailed %>% left_join(tba_rating %>% select(team_key, TBA=rank), by="team_key")
 ```
+
+Taking more measures into account, we can see in the parallel coordinate
+plot below, that the third place TBA ranking for team frc9999 is not
+backed up by a similar high performance in the contribution to the
+score, which is indicative of a lot of luck and/or strategy in the
+qualifying matches. On the other hand, team frc4646 is in the top three
+performing teams except for their TBA ranking, indicating that they
+would be a great pick for any alliance. Similarly, team frc525 would
+make a good contributing partner in an alliance.
+
+``` r
+library(ggpcp)
+
+
+ detailed %>% 
+   mutate(
+     TBA = max(TBA)-TBA,
+    team_key = reorder(factor(team_key), TBA) 
+    ) %>%
+   pcp_select(team_key, TBA, starts_with("rating"), team_key) %>%
+   pcp_scale() %>%
+   ggplot(aes_pcp()) + 
+   geom_pcp() + 
+   geom_pcp_labels(size=3) + 
+   xlab("") + ylab("") + 
+   theme(axis.text.x = element_text(angle=30, hjust=1))
+```
+
+<div class="figure">
+
+<img src="man/figures/README-fig-parallel-1.png" alt="Parallel Coordinate Plot of multiple measures showing different aspects of a team's contribution. From left to right, the teams' tba ranking and their contribution to the score, the score without fouls, the autoPoints, the teleop points, and the number of fouls are shown. Team frc3928 dominates in all of these measures except for the number of auto points and the number of fouls." width="100%" />
+<p class="caption">
+
+Parallel Coordinate Plot of multiple measures showing different aspects
+of a team’s contribution. Higher is better for all measures.
+</p>
+
+</div>

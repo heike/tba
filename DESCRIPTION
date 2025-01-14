@@ -19,6 +19,7 @@ Imports:
     tidyselect (>= 1.2.1)
 Suggests:
     ggplot2,
+    ggpcp,
     testthat
 URL: https://github.com/heike/tba/, https://heike.github.io/tba/
 BugReports: https://github.com/heike/tba/issues
