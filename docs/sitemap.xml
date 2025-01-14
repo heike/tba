@@ -1,17 +1,18 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>/404.html</loc></url>
-<url><loc>/LICENSE-text.html</loc></url>
-<url><loc>/LICENSE.html</loc></url>
-<url><loc>/authors.html</loc></url>
-<url><loc>/index.html</loc></url>
-<url><loc>/reference/calculate_tba_ranking.html</loc></url>
-<url><loc>/reference/calculate_tba_ranking_2024.html</loc></url>
-<url><loc>/reference/check_key.html</loc></url>
-<url><loc>/reference/get_api_key.html</loc></url>
-<url><loc>/reference/get_match_details.html</loc></url>
-<url><loc>/reference/get_ranking_by.html</loc></url>
-<url><loc>/reference/get_records.html</loc></url>
-<url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/tba_ranking.html</loc></url>
+<url><loc>https://heike.github.io/tba/404.html</loc></url>
+<url><loc>https://heike.github.io/tba/LICENSE-text.html</loc></url>
+<url><loc>https://heike.github.io/tba/LICENSE.html</loc></url>
+<url><loc>https://heike.github.io/tba/authors.html</loc></url>
+<url><loc>https://heike.github.io/tba/index.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/calculate_tba_ranking.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/calculate_tba_ranking_2024.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/check_key.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/get_api_key.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/get_match_details.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/get_ranking_by.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/get_ranking_by_one.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/get_records.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/index.html</loc></url>
+<url><loc>https://heike.github.io/tba/reference/tba_ranking.html</loc></url>
 </urlset>
 

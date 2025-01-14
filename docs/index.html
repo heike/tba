@@ -37,6 +37,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/heike/tba/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -49,7 +50,7 @@
 </h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>The goal of the tba package is to provide easy access to match data for events run in the first robotics division. Access is based on the api of <a href="https://www.thebluealliance.com/" class="external-link">The Blue Alliance</a>.</p>
+<p>The goal of the tba package is to provide easy access to match data for events run in the first robotics division. Access is based on the Read API v3 of <a href="https://www.thebluealliance.com/" class="external-link">The Blue Alliance</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -67,7 +68,7 @@
 </h2>
 <p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tba</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heike/tba/" class="external-link">tba</a></span><span class="op">)</span></span>
 <span><span class="co">## basic example code</span></span>
 <span></span>
 <span><span class="co"># Team Neutrino has team code `frc3928` </span></span>
@@ -83,18 +84,15 @@
 <span><span class="va">events</span><span class="op">$</span><span class="va">name</span></span>
 <span><span class="co">#&gt; [1] "Cow Town Throwdown"        "Galileo Division"         </span></span>
 <span><span class="co">#&gt; [3] "Iowa Regional"             "Clash in the Corn"        </span></span>
-<span><span class="co">#&gt; [5] "Central Missouri Regional"</span></span></code></pre></div>
-<p>The matches from Clash in the Corn can be accessed using the event code <code>2024iawes</code>:</p>
+<span><span class="co">#&gt; [5] "Central Missouri Regional"</span></span>
+<span><span class="va">events</span><span class="op">$</span><span class="va">event_code</span></span>
+<span><span class="co">#&gt; [1] "cttd"  "gal"   "iacf"  "iawes" "mose"</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="access-score-data-from-a-competition">Access Score Data from a Competition<a class="anchor" aria-label="anchor" href="#access-score-data-from-a-competition"></a>
+</h3>
+<p>The matches from <em>Clash in the Corn</em> can be accessed using the event code <code>2024iawes</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="va">matches</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_records.html">get_records</a></span><span class="op">(</span><span class="st">"event/2024iawes/matches"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">matches</span>, <span class="va">comp_level</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
@@ -127,8 +125,120 @@
 <span><span class="co">#&gt; #   foulPoints &lt;int&gt;, teleopAmpNotePoints &lt;int&gt;, teleopPoints &lt;int&gt;,</span></span>
 <span><span class="co">#&gt; #   teleopSpeakerNoteAmplifiedPoints &lt;int&gt;, teleopSpeakerNotePoints &lt;int&gt;, …</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="calculate-a-teams-contribution-to-an-outcome">Calculate a team’s contribution to an outcome<a class="anchor" aria-label="anchor" href="#calculate-a-teams-contribution-to-an-outcome"></a>
+</h3>
+<p>The function <code>get_ranking_by</code> allows a ranking of each team (not the alliance!) by any numeric variable. It only makes sense to use matches from the qualifying round. The resulting number is an estimate of the team’s contribution to the chosen measurement. When using <code>get_ranking_by</code> with the <code>score</code> from the qualifying matches, the resulting coefficients for the ranking is the Offesnive Power Rating (OPR) - as published on the TBA API under insights.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># ranking by OPR</span></span>
+<span><span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span><span class="op">==</span><span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/get_ranking_by.html">get_ranking_by</a></span><span class="op">(</span><span class="va">score</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 12 × 3</span></span>
+<span><span class="co">#&gt;    team_key     n `rating(score)`</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;           &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 frc3928     11           24.8 </span></span>
+<span><span class="co">#&gt;  2 frc5041     11           23.8 </span></span>
+<span><span class="co">#&gt;  3 frc4646     11           17.2 </span></span>
+<span><span class="co">#&gt;  4 frc525      11           16.5 </span></span>
+<span><span class="co">#&gt;  5 frc6419     11           15.4 </span></span>
+<span><span class="co">#&gt;  6 frc6317     11           14.3 </span></span>
+<span><span class="co">#&gt;  7 frc9999     11           13.7 </span></span>
+<span><span class="co">#&gt;  8 frc9997     11            9.06</span></span>
+<span><span class="co">#&gt;  9 frc9998     11            7.14</span></span>
+<span><span class="co">#&gt; 10 frc9996     11            2.86</span></span>
+<span><span class="co">#&gt; 11 frc967      11            2.58</span></span>
+<span><span class="co">#&gt; 12 frc9995     11            2.32</span></span></code></pre></div>
+<p>It makes sense, to not include points from fouls (assuming that it is hard to make another team foul one’s alliance):</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">no_fouls</span> <span class="op">&lt;-</span> <span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span> <span class="op">==</span> <span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/get_ranking_by.html">get_ranking_by</a></span><span class="op">(</span><span class="va">score</span> <span class="op">-</span> <span class="va">foulPoints</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">no_fouls</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span><span class="co">#&gt;   team_key     n `rating(score - foulPoints)`</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;int&gt;                        &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 frc3928     11                         23.6</span></span>
+<span><span class="co">#&gt; 2 frc4646     11                         19.4</span></span>
+<span><span class="co">#&gt; 3 frc5041     11                         19.1</span></span>
+<span><span class="co">#&gt; 4 frc525      11                         17.5</span></span>
+<span><span class="co">#&gt; 5 frc6317     11                         12.7</span></span>
+<span><span class="co">#&gt; 6 frc6419     11                         11.9</span></span></code></pre></div>
+<p>Most of the time, the resulting ranking should be quite similar, but differences in these rankings might give some insight as to whether some teams profitted from being fouled during the qualification round. In this example, most of the rankings stay the same, but the 2nd and the 3rd team switch places: <code>frc5041</code> seems to have benefitted during the qualifying matches more from their opponents’ fouls than <code>frc4646</code>. Their rating of contribution to the team’s score without counting fouls is quite similar.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span><span class="op">==</span><span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/get_ranking_by.html">get_ranking_by</a></span><span class="op">(</span><span class="va">score</span><span class="op">-</span><span class="va">foulPoints</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 12 × 3</span></span>
+<span><span class="co">#&gt;    team_key     n `rating(score - foulPoints)`</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;                        &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 frc3928     11                       23.6  </span></span>
+<span><span class="co">#&gt;  2 frc4646     11                       19.4  </span></span>
+<span><span class="co">#&gt;  3 frc5041     11                       19.1  </span></span>
+<span><span class="co">#&gt;  4 frc525      11                       17.5  </span></span>
+<span><span class="co">#&gt;  5 frc6317     11                       12.7  </span></span>
+<span><span class="co">#&gt;  6 frc6419     11                       11.9  </span></span>
+<span><span class="co">#&gt;  7 frc9999     11                       10.7  </span></span>
+<span><span class="co">#&gt;  8 frc9997     11                        6.37 </span></span>
+<span><span class="co">#&gt;  9 frc9998     11                        5.96 </span></span>
+<span><span class="co">#&gt; 10 frc967      11                        2.44 </span></span>
+<span><span class="co">#&gt; 11 frc9996     11                       -0.409</span></span>
+<span><span class="co">#&gt; 12 frc9995     11                       -2.54</span></span></code></pre></div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+<div class="section level3">
+<h3 id="comparing-multiple-outcomes">Comparing Multiple Outcomes<a class="anchor" aria-label="anchor" href="#comparing-multiple-outcomes"></a>
+</h3>
+<p>By comparing the two measures visually we also see, that the big gap between the top two teams and the other teams suggested by the OPR ranking, turns into a group of four teams with a gap to the remaining teams:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># combine the OPR with the ranking not including fouls:</span></span>
+<span><span class="va">all_points</span> <span class="op">&lt;-</span> <span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/get_ranking_by.html">get_ranking_by</a></span><span class="op">(</span><span class="va">score</span>, <span class="va">score</span><span class="op">-</span><span class="va">foulPoints</span><span class="op">)</span></span>
+<span><span class="va">all_points</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`rating(score)`</span>, y <span class="op">=</span> <span class="va">`rating(score - foulPoints)`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"OPR"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">team_key</span><span class="op">)</span>, size<span class="op">=</span><span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.6</span>, fill_alpha <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_rug.html" class="external-link">geom_rug</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.03</span>, <span class="st">"npc"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_equal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in ggrepel::geom_label_repel(aes(label = team_key), size = 3, alpha =</span></span>
+<span><span class="co">#&gt; 0.6, : Ignoring unknown parameters: `fill_alpha`</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="worst-fouling-team">Worst fouling team<a class="anchor" aria-label="anchor" href="#worst-fouling-team"></a>
+</h3>
+<p>Any of the details going into the score can be used as outcome measurement. The number of points given to the opponent because of a team’s foul is determined (in the 2024 season) as 5 points for a foul and 2 points for a technical foul. The list below is sorted with worst offenders at the top:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scores</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comp_level</span><span class="op">==</span><span class="st">"qm"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/get_ranking_by.html">get_ranking_by</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">foulCount</span><span class="op">+</span><span class="fl">5</span><span class="op">*</span><span class="va">techFoulCount</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; Warning in all(model_data$dependent): coercing argument of type 'double' to</span></span>
+<span><span class="co">#&gt; logical</span></span>
+<span><span class="co">#&gt; # A tibble: 12 × 3</span></span>
+<span><span class="co">#&gt;    team_key     n `rating(2 * foulCount + 5 * techFoulCount)`</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;                                       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 frc9998     11                                      6.06  </span></span>
+<span><span class="co">#&gt;  2 frc9997     11                                      4.91  </span></span>
+<span><span class="co">#&gt;  3 frc6317     11                                      2.60  </span></span>
+<span><span class="co">#&gt;  4 frc525      11                                      2.38  </span></span>
+<span><span class="co">#&gt;  5 frc967      11                                      2.25  </span></span>
+<span><span class="co">#&gt;  6 frc9995     11                                      2.22  </span></span>
+<span><span class="co">#&gt;  7 frc3928     11                                      1.86  </span></span>
+<span><span class="co">#&gt;  8 frc9999     11                                      1.18  </span></span>
+<span><span class="co">#&gt;  9 frc4646     11                                      0.917 </span></span>
+<span><span class="co">#&gt; 10 frc9996     11                                      0.146 </span></span>
+<span><span class="co">#&gt; 11 frc6419     11                                      0.0238</span></span>
+<span><span class="co">#&gt; 12 frc5041     11                                     -1.62</span></span></code></pre></div>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/heike/tba/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/heike/tba/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

@@ -13,16 +13,18 @@
 #' 
 #' @param data tibble of match information - it is assumed that each line corresponds 
 #' to the score breakdown of one team in one event's match.
-#' @param variable numeric measurement. 
+#' @param ... numeric variables measuring aspects a team's performance (in qualifying matches). 
 #' @param method character which model should be calculated? Either `normal` or `loglinear`.
 #' @returns tibble of the ranked teams and the number of matches (`n`) that the ranking is based on.
 #' @export
 #' @importFrom dplyr n desc mutate arrange summarize group_by count across
-#' @importFrom dplyr rowwise c_across any_of everything all_of
+#' @importFrom dplyr rowwise c_across any_of everything all_of 
+#' @importFrom tidyselect quos
 #' @importFrom tidyr pivot_wider
-#' @importFrom rlang as_label enquo
+#' @importFrom rlang as_label 
 #' @importFrom stats coefficients gaussian glm na.omit poisson var
 #' @importFrom purrr quietly discard  
+#' @importFrom tibble as_tibble
 #' @examples
 #' # example code
 #' # get all matches for one event:
@@ -36,10 +38,74 @@
 #'   get_ranking_by(score)
 #' # These coefficients correspond to the OPR 
 #' 
+#' # additionally get the team contributions to the score without counting the opponents' fouls:
+#' match_details %>% filter(comp_level == "qm") %>% 
+#'   get_ranking_by(score, score-foulPoints)
+get_ranking_by <- function(data, ... , method = "normal") {
+  dependent_list <- quos(..., .ignore_empty = "all")
+  if (length(dependent_list) == 0) {
+    stop("You need to specify at least one variable to rank by, eg 'get_ranking_by(<data>, score)'")
+  }
+  result <- as_tibble(
+    data.frame(
+      names_list = dependent_list %>% sapply(FUN = as_label),
+      rankings = I(lapply(dependent_list, FUN = function(x) {
+        res <- get_ranking_by_one(data, {{x}})
+        names(res)[ncol(res)-1] <- "coefficient"
+        res
+      }))))
+  result <- result %>% tidyr::unnest(cols = "rankings") %>%
+    mutate(names_list = sprintf("rating(%s)", .data$names_list))
+
+  result %>% pivot_wider(names_from="names_list", values_from = "coefficient") 
+}
+
+
+
+#' Rank teams in the qualifying matches of an event by a scoring variable
+#' 
+#' All teams are ranked (if possible) by their contribution to the scoring variable. 
+#' 
+#' In order to model each team's contribution, a wide data set has to be constructed, with each
+#' team as a variable, and each row as one of the alliances in one match and their score. 
+#' An alliance in a match consists of exactly three robots. This requirement is checked before modelling
+#' and if not fulfilled, results in a warning. 
+#' A normal model is then fitted, or, if `method = "loglinear"` a log-linear model is fitted, if all values in the scoring variable are non-negative.
+#' The coefficients of this model can be interpreted as the average (log) contribution of that
+#' team to the score of a match. The OPR (offensive power rating) corresponds 
+#' to a call to `get_ranking_by` with `score` as the variable. 
+#' 
+#' @param data tibble of match information - it is assumed that each line corresponds 
+#' to the score breakdown of one team in one event's match.
+#' @param variable numeric measurement. 
+#' @param method character which model should be calculated? Either `normal` or `loglinear`.
+#' @returns tibble of the ranked teams and the number of matches (`n`) that the ranking is based on.
+#' @export
+#' @importFrom dplyr n desc mutate arrange summarize group_by count across
+#' @importFrom dplyr rowwise c_across any_of everything all_of
+#' @importFrom tibble as_tibble
+#' @importFrom tidyr pivot_wider
+#' @importFrom rlang as_label 
+#' @importFrom tidyselect enquo
+#' @importFrom stats coefficients gaussian glm na.omit poisson var
+#' @importFrom purrr quietly discard  
+#' @examples
+#' # example code
+#' # get all matches for one event:
+#' matches <- get_records("event/2024cttd/matches")
+#' # get the score breakdown for each of the teams in each match
+#' match_details <- get_match_details(matches)
+#' 
+#' library(dplyr, quietly=TRUE)
+#' # now get the contribution to the score:
+#' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
+#'   get_ranking_by_one(score)
+#' # These coefficients correspond to the OPR 
+#' 
 #' # team contribution to the score without counting the opponents' fouls:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
 #'   get_ranking_by(score-foulPoints)
-get_ranking_by <- function(data, variable, method = "normal") {
+get_ranking_by_one <- function(data, variable, method = "normal") {
   data <- data %>% mutate(dependent = {{variable}})
   not_found <- setdiff(c("team_key", "match_number", "alliance"), names(data))
   if (length(not_found) > 0) {
@@ -72,7 +138,7 @@ get_ranking_by <- function(data, variable, method = "normal") {
     pivot_wider(names_from="team_key", values_from = "ones", values_fill=0) %>% 
     select(-"match_number", -"alliance")
   
-  if ((all(model_data$dependent) >=0) & (method == "loglinear")) {
+  if ((all(model_data$dependent >=0)) & (method == "loglinear")) {
     model <- glm(dependent~.-1, data = model_data, family = poisson(link="log"))
     
   } else {
@@ -86,6 +152,6 @@ get_ranking_by <- function(data, variable, method = "normal") {
   
   result <- as_tibble(data.frame(team_key = names(coefs),  coefs)) %>%
     left_join(qualifiers %>% group_by(.data$team_key) %>% count(), by="team_key")
-  names(result)[2] <- as_label(enquo(variable))
+  names(result)[2] <- sprintf("rating(%s)",as_label(enquo(variable)))
   result                         
 }

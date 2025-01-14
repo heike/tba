@@ -8,6 +8,5 @@
 
 library(testthat)
 library(tba)
-library(dplyr, quietly = TRUE)
 
 test_check("tba")
