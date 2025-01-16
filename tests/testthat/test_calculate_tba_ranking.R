@@ -24,5 +24,7 @@ test_that("calculate_tba_ranking works", {
   # Warning: Matches from multiple events are included: '2022cttd, 2023cttd'
   # Message: scoring not implemented for 2023 or 2022
   expect_message(expect_warning(calculate_tba_ranking(cttd_details)))
-  
+  # Warning: Matches from multiple events are included: '2022cttd, 2023cttd'
+  # Error: all(season == 2024) is not TRUE
+  expect_error(expect_warning(calculate_tba_ranking_2024(cttd_details)))  
 })

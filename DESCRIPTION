@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Heike", "Hofmann", , "hhofmann4@unl.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Provide access to the data and support modelling of scores and rankings for team contributions to The Blue Alliance First Robotics Division.
+Description: Provide access to the data and support modelling of scores and rankings for team contributions in matches of The Blue Alliance First Robotics Division.
 License: MIT + file LICENSE
 Imports: 
     dplyr (>= 1.1.4),
