@@ -58,7 +58,7 @@ call the function <code>set_api_key</code> with the string found under <code>X-T
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_api_key</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_api_key</span><span class="op">(</span><span class="va">key</span>, check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">set_api_key</span><span class="op">(</span><span class="va">key</span>, check <span class="op">=</span> <span class="cn">TRUE</span>, overwrite_check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,6 +71,10 @@ call the function <code>set_api_key</code> with the string found under <code>X-T
 
 <dt id="arg-check">check<a class="anchor" aria-label="anchor" href="#arg-check"></a></dt>
 <dd><p>Boolean. Should the key be checked for validity?</p></dd>
+
+
+<dt id="arg-overwrite-check">overwrite_check<a class="anchor" aria-label="anchor" href="#arg-overwrite-check"></a></dt>
+<dd><p>Boolean. Should user be asked before an existing key is overwritten?</p></dd>
 
 </dl></div>
     <div class="section level2">
