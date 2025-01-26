@@ -204,7 +204,7 @@ all_points %>% ggplot(aes(x = `rating(score)`, y = `rating(score - foulPoints)`)
 
 <div class="figure">
 
-<img src="man/figures/README-fig-scatter-1.png" alt="Scatterplot of team contributions measured in OPR (x axis) and to the score without foul points (y axis). The relationship is roughly linear, but the spacing between team contributions is different as discussed in more detail in the writeup." width="100%" />
+<img src="man/figures/README-fig-scatter-1.png" alt="Scatterplot of team contributions measured in OPR (x axis) and to the  score without foul points (y axis).  The relationship is roughly linear, but the spacing between team contributions is different as discussed in more detail in the writeup." width="100%" />
 <p class="caption">
 
 Scatterplot of team contributions measured in OPR (x axis) and to the
@@ -249,7 +249,7 @@ detailed <- scores %>% filter(comp_level=="qm") %>%
   get_ranking_by(score, score - foulPoints, autoPoints, teleopPoints, -1*(2*foulCount+5*techFoulCount)) 
 
 # add the tba rating to the mix:
-tba_rating <- tba_ranking("iawes", 2024)
+tba_rating <- tba_ranking("2024iawes")
 detailed <- detailed %>% left_join(tba_rating %>% select(team_key, TBA=rank), by="team_key")
 ```
 

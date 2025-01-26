@@ -4,12 +4,10 @@
 \alias{tba_ranking}
 \title{Get team rankings for an event}
 \usage{
-tba_ranking(event_code, season)
+tba_ranking(event_code)
 }
 \arguments{
-\item{event_code}{character string for an event}
-
-\item{season}{four-digit year}
+\item{event_code}{character string for an event -  usually an eight-character string consisting of a four-digit year followed by an acronym for the event, such as 'cttd' for "Cow Town Throw Down".}
 }
 \value{
 tibble of the rankings for all teams that participated in the event
@@ -18,5 +16,5 @@ tibble of the rankings for all teams that participated in the event
 Get team rankings for an event
 }
 \examples{
-tba_ranking("cttd", 2024) # same team ranking as in example for `calc_ranking_tba_2024`
+tba_ranking("2024cttd") # same team ranking as in example for `calc_ranking_tba_2024`
 }

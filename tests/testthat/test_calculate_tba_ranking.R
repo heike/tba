@@ -1,5 +1,5 @@
 test_that("calculate_tba_ranking works", {
-  tba_rankings <- tba_ranking("cttd", 2024)
+  tba_rankings <- tba_ranking("cttd2024")
   
   
   cttd_matches <- get_records("event/2024cttd/matches")

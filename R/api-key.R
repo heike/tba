@@ -23,17 +23,20 @@ get_api_key <- function() {
 #' @importFrom glue glue
 #' @param key character string. Authorization key for read access to TBA's APIv3 (2025). 
 #' @param check Boolean. Should the key be checked for validity?
+#' @param overwrite_check Boolean. Should user be asked before an existing key is overwritten?
 #' @export
-set_api_key <- function(key, check=TRUE) {
+set_api_key <- function(key, check=TRUE, overwrite_check=TRUE) {
   key_there <- Sys.getenv("TBA_KEY", unset = NA)
   if (!is.na(key_there)) {
     if (key == key_there) { 
       message("Key is set.") 
     } else {
+      if (!overwrite_check) {
       char <- ""
       while (!(char %in% c("y", "Y", "n", "N")))
         char <- readline("Overwrite existing key with a new API key. Proceed? (y/n): ")
       if (char %in% c("n", "N")) invisible(return())
+      }
     }
   }
   if (check) {

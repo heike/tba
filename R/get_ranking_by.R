@@ -106,6 +106,7 @@ get_ranking_by <- function(data, ... , method = "normal") {
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
 #'   get_ranking_by(score-foulPoints)
 get_ranking_by_one <- function(data, variable, method = "normal") {
+#  browser()
   data <- data %>% mutate(dependent = {{variable}})
   not_found <- setdiff(c("team_key", "match_number", "alliance"), names(data))
   if (length(not_found) > 0) {

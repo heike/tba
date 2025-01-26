@@ -7,12 +7,14 @@
 \usage{
 get_api_key()
 
-set_api_key(key, check = TRUE)
+set_api_key(key, check = TRUE, overwrite_check = TRUE)
 }
 \arguments{
 \item{key}{character string. Authorization key for read access to TBA's APIv3 (2025).}
 
 \item{check}{Boolean. Should the key be checked for validity?}
+
+\item{overwrite_check}{Boolean. Should user be asked before an existing key is overwritten?}
 }
 \value{
 \code{get_api_key} returns the key as an invisible object. \code{set_api_key} sets the specified key as environment variable.

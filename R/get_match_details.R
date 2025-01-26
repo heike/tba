@@ -38,7 +38,11 @@ get_match_details <- function(data) {
     left_join(data %>% select(-"alliances", -"score_breakdown"), 
               by = c("comp_level", "match_number", "set_number"))
   
-  rbind(team_blue, team_red) %>% 
+  in_common <- intersect(names(team_blue), names(team_red))
+  in_common <- setdiff(in_common, c("surrogate_team_keys", "videos")) 
+  # take surrogate keys and other list variables out
+  
+  rbind(team_blue[,in_common], team_red[, in_common]) %>% 
     unnest_longer(col="team_keys", values_to = "team_key")
 }
 

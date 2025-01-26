@@ -146,7 +146,7 @@ detailed <- scores %>% filter(comp_level=="qm") %>%
   get_ranking_by(score, score - foulPoints, autoPoints, teleopPoints, -1*(2*foulCount+5*techFoulCount)) 
 
 # add the tba rating to the mix:
-tba_rating <- tba_ranking("iawes", 2024)
+tba_rating <- tba_ranking("2024iawes")
 detailed <- detailed %>% left_join(tba_rating %>% select(team_key, TBA=rank), by="team_key")
 ```
 
