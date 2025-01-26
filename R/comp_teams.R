@@ -87,7 +87,8 @@ compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
   
   if (!is.na(color)) {
     which_role <- which(frc_roles==color)
-    if (length(which_role) == 0) message(sprintf('Skipping color lines: color = "%s"; must be one of "Captain", "Pick 1", "Pick 2", "Pick 3"'))
+    if (length(which_role) == 0) 
+      message(sprintf('Skipping color lines: color = "%s"; must be one of "Captain", "Pick 1", "Pick 2", "Pick 3"', color))
     else {
     
     if (verbose) message(sprintf("Alliance picks up to %s are shown in color.", color))
