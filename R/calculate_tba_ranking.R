@@ -12,7 +12,7 @@
 #' # example code
 #' \dontrun{
 #' # get all matches for one event:
-#' clash_matches <- get_records("event/2025cttd/matches")
+#' clash_matches <- get_records("event/2024cttd/matches")
 #' # get the score breakdown for each of the teams in each match
 #' clash_details <- get_match_details(clash_matches)
 #' # now get the rankings:
@@ -60,9 +60,10 @@ calculate_tba_ranking_2024 <- function(data) {
   stopifnot(all(season==2024))
   
   # bit messy, but based on definition of ranking system in Game Manual  
+  names(data) <- gsub("score_breakdown_", "", names(data))
   data %>% 
     mutate(
-      score_no_fouls = .data$score - .data$foulPoints 
+      score_no_fouls = .data$alliances_score - .data$foulPoints 
     ) %>%
     dplyr::filter(.data$comp_level == "qm") %>%
     select("match_number", "alliance", "team_key",

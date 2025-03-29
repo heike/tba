@@ -41,9 +41,9 @@ match_details <- get_match_details(matches)
 library(dplyr, quietly=TRUE)
 # now get the contribution to the score:
 match_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
-  get_ranking_by_diff(score)
+  get_ranking_by_diff(alliances_score)
 
 # additionally get the team contributions to the score without counting the opponents' fouls:
 match_details \%>\% filter(comp_level == "qm") \%>\% 
-  get_ranking_by_diff(score, score-foulPoints)
+  get_ranking_by_diff(alliances_score, alliances_score-score_breakdown_foulPoints)
 }

@@ -6,7 +6,7 @@
 #' @param call call string from `list`  https://www.thebluealliance.com/apidocs/v3#data-tag-list
 #' @returns tibble (or list) of the content.
 #' @importFrom purrr compact
-#' @importFrom jsonlite fromJSON
+#' @importFrom httr2 request req_headers req_headers_redacted req_url_path_append req_perform resp_body_json
 #' @importFrom tibble as_tibble
 #' @export
 #' @examples
@@ -30,13 +30,27 @@ get_records <- function(call) {
     paste0(tba_base, call), httr::add_headers("X-TBA-Auth-Key" = get_api_key())
   )
   stopifnot(check_valid(records))
-  records_frame <- jsonlite::fromJSON(httr::content(records, as="text", type = "application/json", encoding = "UTF-8"))
-  if (is.null(nrow(records_frame))) {
-    records_frame <- purrr::compact(records_frame)
-  }
-  results <- records_frame
-  res <- try({
-    results <- as_tibble(records_frame)
-    }, silent = TRUE)
+  
+  base_url <- "https://www.thebluealliance.com/api/v3"
+  req <- request(base_url)
+  
+  req <- req |>
+    req_headers("Accept"="application/json") |>
+    req_headers_redacted("X-TBA-Auth-Key" = get_api_key()) |>
+    req_url_path_append(call)
+  
+  resp <- req |> req_perform()
+  
+  results <- resp |> resp_body_json(simplifyVector=TRUE)  
+  
+#  records_frame <- jsonlite::fromJSON(records_frame, encoding = "UTF-8")
+  # records |> 
+  # if (is.null(nrow(records))) {
+  #    records <- purrr::compact(records)
+  # }
+  # results <- records
+  # res <- try({
+  #   results <- as_tibble(results)
+  #   }, silent = TRUE)
   results
 }

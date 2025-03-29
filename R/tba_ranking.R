@@ -7,6 +7,7 @@
 #' @export
 #' @examples
 #' tba_ranking("2024cttd") # same team ranking as in example for `calc_ranking_tba_2024`
+#' tba_ranking("2025iacf") 
 tba_ranking <- function(event_code) {
   parse_quietly <- quietly(parse_number)
   

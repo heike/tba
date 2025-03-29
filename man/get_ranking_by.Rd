@@ -40,10 +40,11 @@ match_details <- get_match_details(matches)
 library(dplyr, quietly=TRUE)
 # now get the contribution to the score:
 match_details \%>\% filter(comp_level == "qm") \%>\% # get the qualifying matches
-  get_ranking_by(score)
+  get_ranking_by(alliances_score)
 # These coefficients correspond to the OPR 
 
 # additionally get the team contributions to the score without counting the opponents' fouls:
+names(match_details) <- gsub("score_breakdown_","", names(match_details))
 match_details \%>\% filter(comp_level == "qm") \%>\% 
-  get_ranking_by(score, score-foulPoints)
+  get_ranking_by(alliances_score, alliances_score-foulPoints)
 }

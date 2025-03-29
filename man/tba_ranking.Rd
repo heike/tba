@@ -17,4 +17,5 @@ Get team rankings for an event
 }
 \examples{
 tba_ranking("2024cttd") # same team ranking as in example for `calc_ranking_tba_2024`
+tba_ranking("2025iacf") 
 }

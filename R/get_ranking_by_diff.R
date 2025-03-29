@@ -36,11 +36,11 @@
 #' library(dplyr, quietly=TRUE)
 #' # now get the contribution to the score:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by_diff(score)
+#'   get_ranking_by_diff(alliances_score)
 #' 
 #' # additionally get the team contributions to the score without counting the opponents' fouls:
 #' match_details %>% filter(comp_level == "qm") %>% 
-#'   get_ranking_by_diff(score, score-foulPoints)
+#'   get_ranking_by_diff(alliances_score, alliances_score-score_breakdown_foulPoints)
 get_ranking_by_diff <- function(data, ... , method = "normal") {
   dependent_list <- quos(..., .ignore_empty = "all")
   if (length(dependent_list) == 0) {
@@ -98,12 +98,12 @@ get_ranking_by_diff <- function(data, ... , method = "normal") {
 #' library(dplyr, quietly=TRUE)
 #' # now get the contribution to the score:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by_diff_one(score)
+#'   get_ranking_by_diff_one(alliances_score)
 #' # These coefficients correspond to the OPR 
 #' 
 #' # team contribution to the score without counting the opponents' fouls:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by_diff_one(score-foulPoints)
+#'   get_ranking_by_diff_one(alliances_score-score_breakdown_foulPoints)
 get_ranking_by_diff_one <- function(data, variable, method = "normal") {
   data <- data %>% mutate(dependent = {{variable}})
   not_found <- setdiff(c("team_key", "match_number", "alliance"), names(data))

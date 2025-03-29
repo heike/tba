@@ -23,4 +23,6 @@ HH: still need to test: what happens, when there is a surrogate team used in a m
 \examples{
 clash_matches <- get_records("event/2024iawes/matches")
 clash_details <- get_match_details(clash_matches)
+clash_matches <- get_records("event/2025iacf/matches")
+clash_details <- get_match_details(clash_matches)
 }

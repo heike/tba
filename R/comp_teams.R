@@ -21,7 +21,9 @@
 #' @export
 #' @examples
 #' # just get the plot
-#' compare_teams("2024iacf", score)
+#' compare_teams("2024iacf", alliances_score)
+#' compare_teams("2025mose", alliances_score)
+#' compare_teams("2025iacf", alliances_score)
 compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
   if (verbose) message("Looking up event ... ")
   matches <- get_records(sprintf("event/%s/matches", event_code))
@@ -41,7 +43,7 @@ compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
   
   # team contribution to the difference in scores between red and blue
   score_diff <- scores %>% dplyr::filter(.data$comp_level=="qm") %>%
-    get_ranking_by_diff(.data$score) 
+    get_ranking_by_diff(.data$alliances_score) 
   detailed <- left_join(detailed, score_diff, by = "team_key")
   
   if (verbose) message("Loading TBA rankings ...")
@@ -62,20 +64,23 @@ compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
   # get chosen alliances
   alliances <- get_records(sprintf("event/%s/alliances", event_code))
 
-  alliances <- alliances %>% select("name", "picks") %>% unnest(.data$picks) 
+  if (!is_empty(alliances)) {
+  alliances <- alliances %>% select("name", "picks") %>% unnest("picks") 
   
   alliances <- alliances %>% group_by(.data$name) %>%
     mutate(
       role = frc_roles[1:n()],
       role = factor(.data$role, levels = frc_roles, ordered = TRUE)
     ) %>% ungroup()
-
+  
+  detailed <- detailed %>% 
+    left_join(alliances, by=c("team_key"="picks"))
+  }
   if (verbose) message("Preparing plot ...\n")
   
  # library(ggpcp)
   
   cttd <- detailed %>% 
-    left_join(alliances, by=c("team_key"="picks")) %>% 
     mutate(
       TBA = max(.data$TBA)-.data$TBA,
       team_key = reorder(factor(.data$team_key), .data$TBA)
@@ -83,8 +88,10 @@ compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
     ggpcp::pcp_select("team_key", "TBA", starts_with("rating"), "team_key") %>%
     pcp_scale() 
 
-  alliance_picks <- list()
   
+  
+  alliance_picks <- list()
+  if (!is_empty(alliances)) {
   if (!is.na(color)) {
     which_role <- which(frc_roles==color)
     if (length(which_role) == 0) 
@@ -98,7 +105,7 @@ compare_teams <- function(event_code, ..., color = "Pick 1", verbose = TRUE) {
     # observations are ordered from last to first Alliance. This puts 
     # the line segments corresponding to Alliance 1 on top
     }
-  }
+  }}
     
   cttd %>%  
     ggplot2::ggplot(aes_pcp()) + 

@@ -18,7 +18,7 @@ matches are played or scores are posted.
 # example code
 \dontrun{
 # get all matches for one event:
-clash_matches <- get_records("event/2025cttd/matches")
+clash_matches <- get_records("event/2024cttd/matches")
 # get the score breakdown for each of the teams in each match
 clash_details <- get_match_details(clash_matches)
 # now get the rankings:

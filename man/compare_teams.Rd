@@ -34,5 +34,7 @@ Assumptions/Decisions:
 }
 \examples{
 # just get the plot
-compare_teams("2024iacf", score)
+compare_teams("2024iacf", alliances_score)
+compare_teams("2025mose", alliances_score)
+compare_teams("2025iacf", alliances_score)
 }

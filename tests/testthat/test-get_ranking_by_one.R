@@ -6,7 +6,7 @@ test_that("get_ranking_by_one works", {
   suppressMessages(require(dplyr))
   # now get the contribution to the score:
   ranking <- dplyr::filter(match_details, comp_level == "qm") %>% # get the qualifying matches
-    get_ranking_by_one(score)
-  expect_equal(round(ranking$`rating(score)`[1:5],2), c(44.56, 35.60,31.56, 30.72, 28.06))
-  expect_equal(round(rev(ranking$`rating(score)`)[1:5],2), rev(c(3.78, 3.62, 1.84, 1.17, -2.97)))
+    get_ranking_by_one(alliances_score)
+  expect_equal(round(ranking$`rating(alliances_score)`[1:5],2), c(44.56, 35.60,31.56, 30.72, 28.06))
+  expect_equal(round(rev(ranking$`rating(alliances_score)`)[1:5],2), rev(c(3.78, 3.62, 1.84, 1.17, -2.97)))
 })

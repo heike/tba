@@ -35,12 +35,13 @@
 #' library(dplyr, quietly=TRUE)
 #' # now get the contribution to the score:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by(score)
+#'   get_ranking_by(alliances_score)
 #' # These coefficients correspond to the OPR 
 #' 
 #' # additionally get the team contributions to the score without counting the opponents' fouls:
+#' names(match_details) <- gsub("score_breakdown_","", names(match_details))
 #' match_details %>% filter(comp_level == "qm") %>% 
-#'   get_ranking_by(score, score-foulPoints)
+#'   get_ranking_by(alliances_score, alliances_score-foulPoints)
 get_ranking_by <- function(data, ... , method = "normal") {
   dependent_list <- quos(..., .ignore_empty = "all")
   if (length(dependent_list) == 0) {
@@ -99,12 +100,12 @@ get_ranking_by <- function(data, ... , method = "normal") {
 #' library(dplyr, quietly=TRUE)
 #' # now get the contribution to the score:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by_one(score)
+#'   get_ranking_by_one(alliances_score)
 #' # These coefficients correspond to the OPR 
 #' 
 #' # team contribution to the score without counting the opponents' fouls:
 #' match_details %>% filter(comp_level == "qm") %>% # get the qualifying matches
-#'   get_ranking_by(score-foulPoints)
+#'   get_ranking_by(alliances_score-score_breakdown_foulPoints)
 get_ranking_by_one <- function(data, variable, method = "normal") {
 #  browser()
   data <- data %>% mutate(dependent = {{variable}})
