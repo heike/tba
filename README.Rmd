@@ -73,7 +73,7 @@ detailed scores of each team in each one of the matches:
 
 ```{r}
 scores <- get_match_details(matches)
-head(scores %>% select(comp_level, match_number, set_number, alliance, team_key, score, ends_with("Points")))
+head(scores %>% select(comp_level, match_number, set_number, alliance, team_key, alliances_score, ends_with("Points")))
 ```
 
 ### Calculate a team's contribution to an outcome
@@ -84,14 +84,14 @@ The function `get_ranking_by` allows a ranking of each team (not the alliance!) 
 ```{r}
 # ranking by OPR
 scores %>% filter(comp_level=="qm") %>%
-  get_ranking_by(score)
+  get_ranking_by(alliances_score)
 ```
 
 It makes sense, to not include points from fouls (assuming that it is hard to make another team foul one's alliance):
 
 ```{r}
 no_fouls <- scores %>% filter(comp_level == "qm") %>%
-  get_ranking_by(score - foulPoints)
+  get_ranking_by(alliances_score - score_breakdown_foulPoints)
 head(no_fouls)
 ```
 
@@ -99,7 +99,7 @@ Most of the time, the resulting ranking should be quite similar, but differences
 
 ```{r}
 scores %>% filter(comp_level=="qm") %>%
-  get_ranking_by(score-foulPoints)
+  get_ranking_by(alliances_score-score_breakdown_foulPoints)
 ```
 
 ### Comparing Multiple Outcomes
@@ -119,8 +119,8 @@ library(tidyverse)
 library(ggplot2)
 
 # combine the OPR with the ranking not including fouls:
-all_points <- scores %>% get_ranking_by(score, score-foulPoints)
-all_points %>% ggplot(aes(x = `rating(score)`, y = `rating(score - foulPoints)`)) + 
+all_points <- scores %>% get_ranking_by(alliances_score, alliances_score-score_breakdown_foulPoints)
+all_points %>% ggplot(aes(x = `rating(alliances_score)`, y = `rating(alliances_score - score_breakdown_foulPoints)`)) + 
   geom_point() + xlab("OPR") + 
   ggrepel::geom_label_repel(aes(label = team_key), size=3, alpha = 0.6) +
   geom_rug(length = unit(0.03, "npc")) +
@@ -136,14 +136,15 @@ The number of points given to the opponent because of a team's foul is determine
 
 ```{r}
 scores %>% filter(comp_level=="qm") %>%
-  get_ranking_by(2*foulCount+5*techFoulCount) 
+  get_ranking_by(2*score_breakdown_foulCount+5*score_breakdown_techFoulCount) 
 ```
 
 ### Best at categories
 
 ```{r}
+names(scores) <- gsub("score_breakdown_", "", names(scores))
 detailed <- scores %>% filter(comp_level=="qm") %>%
-  get_ranking_by(score, score - foulPoints, autoPoints, teleopPoints, -1*(2*foulCount+5*techFoulCount)) 
+  get_ranking_by(alliances_score, alliances_score - foulPoints, autoPoints, teleopPoints, -1*(2*foulCount+5*techFoulCount)) 
 
 # add the tba rating to the mix:
 tba_rating <- tba_ranking("2024iawes")
